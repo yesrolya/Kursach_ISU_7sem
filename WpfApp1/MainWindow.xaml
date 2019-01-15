@@ -5,8 +5,90 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Лаборатория виртуальной реальности" Height="450" Width="800"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+     TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+     TextElement.FontWeight="Regular"
+     TextElement.FontSize="13"
+     TextOptions.TextFormattingMode="Ideal"
+     TextOptions.TextRenderingMode="Auto"
+     Background="{DynamicResource MaterialDesignPaper}"
+     FontFamily="{DynamicResource MaterialDesignFont}">
+
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="208*"/>
+            <RowDefinition Height="211*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="7*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel  Visibility="Hidden" Name ="AutorizationPanel" HorizontalAlignment="Center" Height="200" VerticalAlignment="Center" Width="200" Margin="72,110,344,109" Grid.Column="1" Grid.RowSpan="2">
+            <Label HorizontalAlignment="Center" Margin="16" Content="Авторизация"/>
+            <TextBox Name ="LoginBox" Height="23" Margin="16, 0" TextWrapping="Wrap" Text="Login"/>
+            <TextBox Name ="PasswordBox" Height="23" Margin="16, 8" TextWrapping="Wrap" Text="Password"/>
+            <Button Margin ="16,16,16,0"  Content="Подтвердить" Click="AcceptButton_Click" />
+        </StackPanel>
+        <StackPanel Name="MenuPanel" Height="399" Margin="0,10,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="156" Grid.RowSpan="2">
+            <Button Content="Информация" Margin ="0,0,0,4" Click="InfoButton_Click" />
+            <Button Content="Расписание" Margin ="0,0,0,4" Click="ScheduleButton_Click" d:LayoutOverrides="Height" Background="#FF673AB7"/>
+            <Button Content="Аренда" Margin ="0,0,0,4" Click="RentButton_Click" d:LayoutOverrides="Height"/>
+            <Button Content="Клиенты" Margin ="0,0,0,4" Click="ClientsButton_Click" d:LayoutOverrides="Height"/>
+        </StackPanel>
+        <TabControl Name="InfoTab" Visibility="Hidden" Grid.Column="1" Margin="0,10,10,10" HorizontalAlignment="Right" Width="596" Grid.RowSpan="2">
+            <TabItem Header="Список оборудования" Margin="0,0,-4,-2">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="184*"/>
+                        <RowDefinition Height="187*"/>
+                    </Grid.RowDefinitions>
+                    <DataGrid Name="EquipmentGrid" IsReadOnly="True" Margin="10" Grid.RowSpan="2" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="График работы" Margin="3,0,-8,-2">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid Name ="TimeModeGrid" IsReadOnly="True" HorizontalAlignment="Left" Height="351" Margin="10,10,0,0" VerticalAlignment="Top" Width="417"/>
+                    <StackPanel Margin="432,0,10,10" Height="351" VerticalAlignment="Bottom">
+                        <Label Content="Добавить день" HorizontalAlignment="Center"  VerticalAlignment="Top"/>
+                        <Label Content="Режим работы" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="10,0,0,0" Width="128"/>
+                        <RadioButton GroupName="Mode" Name="UsualMode1" Margin="16,4,0,0" IsChecked="True" Content="Обычный" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
+                        <RadioButton GroupName="Mode" Name="LongMode2" Margin="16,4,0,0" Content="Продленный" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
+                        <RadioButton GroupName="Mode" Name="ShortMode3" Margin="16,4,0,8" Content="Неполный" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
+
+                        <Label Content="Дата" HorizontalAlignment="Left" VerticalAlignment="Top" Width="128" Margin="10,0,0,0"/>
+                        <TextBox Name ="DateTimeMode" HorizontalAlignment="Left" Margin="10,4,0,0" Height="23"  TextWrapping="Wrap" Text="ДД.ММ.ГГГГ" VerticalAlignment="Top" Width="128"/>
+                        <Button Content="Добавить" HorizontalAlignment="Center"  Margin="10,16,10,0" VerticalAlignment="Top" Width="128" Click="AddDayButton_Click" />
+                    </StackPanel>
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Скидочная система" Margin="7,0,-11,-2">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="184*"/>
+                        <RowDefinition Height="187*"/>
+                    </Grid.RowDefinitions>
+                    <DataGrid Name ="DiscountGrid"  IsReadOnly="True" HorizontalAlignment="Left" Height="351" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="357" Grid.RowSpan="2">
+                        <DataGrid.Columns >
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <StackPanel HorizontalAlignment="Left" Height="115" Margin="407,47,0,0" VerticalAlignment="Top" Width="158">
+                        <Label Content="Удаление" Margin="8,0,8,0"/>
+                        <TextBox Name="DiscountIDBox" Height="23" TextWrapping="Wrap" Text="ID" Margin="8,0,8,8"/>
+                        <Button Content="Удалить" Height="25" Margin="8,0,8,0" Click="DeleteDiscountButton_Click"/>
+                    </StackPanel>
+                    <StackPanel HorizontalAlignment="Left" Height="141" Margin="407,9,0,0" VerticalAlignment="Top" Width="158" Grid.Row="1">
+                        <Label Content="Добавление" Margin="8,0,8,0"/>
+                        <TextBox Name="DiscountSizeBox" Height="23" Margin="8,0,8,0" TextWrapping="Wrap" Text="Размер скидки"/>
+                        <TextBox Name="DiscountSummBox" Height="23" Margin="8,0,8,8" TextWrapping="Wrap" Text="Сумма"/>
+                        <Button Content="Добавить" Margin="8,0,8,0" Height="25" Click="AddDiscountButton_Click"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <Grid Grid.Column="1" HorizontalAlignment="Left" Height="399" Margin="10,10,0,0" VerticalAlignment="Top" Width="596" Grid.RowSpan="2">
+            <StackPanel HorizontalAlignment="Left" Height="399" Margin="446,0,0,0" VerticalAlignment="Top" Width="150"/>
+        </Grid>
     </Grid>
 </Window>
