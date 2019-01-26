@@ -144,6 +144,205 @@ namespace WpfApp1
             dt.Columns[6].ColumnName = "Позиция";
             return dt;
         }
+        public static DataTable EquipmentShowSchedule()
+        {
+
+            string equipmentRequest =
+                $"SELECT Equipment.id_equipment, " +
+                    $"Type_equipment.type_name, " +
+                    $"Type_equipment.cost, " +
+                    $"Location.position_code " +
+                    $"FROM Equipment, Type_equipment, " +
+                    $"Location, Status_equipment " +
+                    $"WHERE Status_equipment.id_status = Equipment.id_status AND " +
+                    $"Location.id_location = Equipment.id_location AND " +
+                    $"Type_equipment.id_type = Equipment.id_type AND " +
+                    $"Status_equipment.name_status = 'Доступно для использования'";
+            SQLiteCommand command = new SQLiteCommand(equipmentRequest, connection);
+            DataTable dt = new DataTable();
+            using (SQLiteDataAdapter reader = new SQLiteDataAdapter(command))
+            {
+                reader.Fill(dt);
+            }
+            dt.Columns[0].ColumnName = "ИД";
+            dt.Columns[1].ColumnName = "Тип";
+            dt.Columns[2].ColumnName = "Цена";
+            dt.Columns[3].ColumnName = "Позиция";
+            return dt;
+        }
+
+        //РАБОТА С РАСПИСАНИЕМ
+        public static void ScheduleCreate(string Date, 
+            string Hour, string Duration, string Name, 
+            string Phone, bool NewClient, string Card, string Equipment)
+        {
+            string idDate = "1";
+            string idClient = "1";
+            string idCard = Card;
+
+            string dateRequest =
+                $"SELECT id_date " +
+                    $"FROM Date_schedule " +
+                    $"WHERE date_schedule = '{Date}';";
+            SQLiteCommand command = new SQLiteCommand(dateRequest, connection);
+            SQLiteDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                idDate = reader.GetInt32(0).ToString();
+            }
+            reader.Close();
+
+            if (NewClient)
+            {
+                string cardRequest = $"INSERT INTO Card(id_card, summary_cost, discount_size) VALUES ('{Card}', '0', '0');";
+                command = new SQLiteCommand(cardRequest, connection);
+                command.ExecuteNonQuery();
+
+                string clientRequest = $"INSERT INTO Client(name_client, phone_client, id_card) VALUES ('{Name}', '{Phone}', '{idCard}');";
+                command = new SQLiteCommand(clientRequest, connection);
+                command.ExecuteNonQuery();
+
+                clientRequest =
+                $"SELECT id_client " +
+                    $"FROM Client " +
+                    $"WHERE id_card = '{idCard}';";
+                command = new SQLiteCommand(clientRequest, connection);
+                SQLiteDataReader rd = command.ExecuteReader();
+                while (rd.Read())
+                {
+                    idClient = rd.GetInt32(0).ToString();
+                }
+                reader.Close();
+
+            } else
+            {
+                string clientRequest =
+                $"SELECT id_client " +
+                    $"FROM Client " +
+                    $"WHERE id_card = '{idCard}';";
+                command = new SQLiteCommand(clientRequest, connection);
+                SQLiteDataReader rd = command.ExecuteReader();
+                while (rd.Read())
+                {
+                    idClient = rd.GetInt32(0).ToString();
+                }
+                reader.Close();
+            }
+            string sessionRequest = 
+                $"INSERT INTO Schedule_session(id_date, id_client, id_card, " +
+                $"id_equipment, time_session, duration) " +
+                $"VALUES ('{idDate}', '{idClient}', '{idCard}', '{Equipment}', '{Hour}', '{Duration}');";
+            command = new SQLiteCommand(sessionRequest, connection);
+            command.ExecuteNonQuery();
+        }
+
+        public static void ClientCreate(string Name, string Phone, string Date, string Card)
+        {
+            string cardRequest = $"INSERT INTO Card(id_card, summary_cost, discount_size) VALUES ('{Card}', '0', '0');";
+            var command = new SQLiteCommand(cardRequest, connection);
+            command.ExecuteNonQuery();
+
+            string clientRequest = $"INSERT INTO Client(name_client, phone_client, date_birth, id_card) VALUES ('{Name}', '{Phone}', '{Date}', '{Card}');";
+            command = new SQLiteCommand(clientRequest, connection);
+            command.ExecuteNonQuery();
+        }
+        
+        public static DataTable ClientsShow()
+        {
+            string clientsRequest =
+                $"SELECT " +
+                    $"Client.id_client, " +
+                    $"Client.name_client, " +
+                    $"Client.date_birth, " +
+                    $"Client.phone_client, " +
+                    $"Client.id_card, " +
+                    $"Card.summary_cost, " +
+                    $"Card.discount_size " +
+                $"FROM " +
+                    $"Client, Card " +
+                $"WHERE " +
+                $"Client.id_card = Card.id_card";
+            SQLiteCommand command = new SQLiteCommand(clientsRequest, connection);
+            DataTable dt = new DataTable();
+            using (SQLiteDataAdapter reader = new SQLiteDataAdapter(command))
+            {
+                reader.Fill(dt);
+            }
+            dt.Columns[0].ColumnName = "ИД";
+            dt.Columns[1].ColumnName = "Имя";
+            dt.Columns[2].ColumnName = "Дата рождения";
+            dt.Columns[3].ColumnName = "Номер телефона";
+            dt.Columns[4].ColumnName = "Карта";
+            dt.Columns[5].ColumnName = "Стоимость услуг";
+            dt.Columns[6].ColumnName = "Размер скидки";
+            return dt;
+        }
+
+        public static DataTable ScheduleShow()
+        {
+            string scheduleRequest = 
+                $"SELECT " +
+                    $"Schedule_session.id_session, " +
+                    $"Schedule_session.id_equipment, " +
+                    $"Date_schedule.date_schedule, " +
+                    $"Schedule_session.time_session, " +
+                    $"Schedule_session.duration, " +
+                    $"Schedule_session.completed " +
+                $"FROM " +
+                    $"Schedule_session, Date_schedule " +
+                $"WHERE " +
+                $"Schedule_session.id_date = Date_schedule.id_date " +
+                $"AND Schedule_session.completed = 'false'";
+            SQLiteCommand  command = new SQLiteCommand(scheduleRequest, connection);
+            DataTable dt = new DataTable();
+            using (SQLiteDataAdapter reader = new SQLiteDataAdapter(command))
+            {
+                reader.Fill(dt);
+            }
+            dt.Columns[0].ColumnName = "ИД";
+            dt.Columns[1].ColumnName = "ИД Оборудования";
+            dt.Columns[2].ColumnName = "Дата";
+            dt.Columns[3].ColumnName = "Время";
+            dt.Columns[4].ColumnName = "Длительность";
+            dt.Columns[5].ColumnName = "Статус";
+            return dt;
+        }
+        public static void ScheduleUpdate(string id)
+        {
+            string scheduleRequest = $"UPDATE Schedule_session SET completed='true' WHERE id_session = '{id}'";
+            var command = new SQLiteCommand(scheduleRequest, connection);
+            command.ExecuteNonQuery();
+        }
+
+        public static DataTable ScheduleShowCompleted()
+        {
+            string scheduleRequest =
+                $"SELECT " +
+                    $"Schedule_session.id_session, " +
+                    $"Schedule_session.id_equipment, " +
+                    $"Date_schedule.date_schedule, " +
+                    $"Schedule_session.time_session, " +
+                    $"Schedule_session.duration, " +
+                    $"Schedule_session.completed " +
+                $"FROM " +
+                    $"Schedule_session, Date_schedule " +
+                $"WHERE " +
+                $"Schedule_session.id_date = Date_schedule.id_date " +
+                $"AND Schedule_session.completed = 'true'";
+            SQLiteCommand command = new SQLiteCommand(scheduleRequest, connection);
+            DataTable dt = new DataTable();
+            using (SQLiteDataAdapter reader = new SQLiteDataAdapter(command))
+            {
+                reader.Fill(dt);
+            }
+            dt.Columns[0].ColumnName = "ИД";
+            dt.Columns[1].ColumnName = "ИД Оборудования";
+            dt.Columns[2].ColumnName = "Дата";
+            dt.Columns[3].ColumnName = "Время";
+            dt.Columns[4].ColumnName = "Длительность";
+            dt.Columns[5].ColumnName = "Статус";
+            return dt;
+        }
     }
 
     class User
@@ -184,9 +383,11 @@ namespace WpfApp1
         {
             BD.CreateConnection();
             InitializeComponent();
-            //AutorizationPanel.Visibility = Visibility.Visible;
-            //MenuPanel.Visibility = Visibility.Hidden;
-            //InfoTab.Visibility = Visibility.Hidden;
+            AutorizationPanel.Visibility = Visibility.Visible;
+            MenuPanel.Visibility = Visibility.Hidden;
+            InfoTab.Visibility = Visibility.Hidden;
+            SchedulePanel.Visibility = Visibility.Hidden;
+            ClientPanel.Visibility = Visibility.Hidden;
         }
         //AUTORIZATION
         private void AcceptButton_Click(object sender, RoutedEventArgs e)
@@ -201,6 +402,8 @@ namespace WpfApp1
         private void InfoButton_Click(object sender, RoutedEventArgs e)
         {
             InfoTab.Visibility = Visibility.Visible;
+            SchedulePanel.Visibility = Visibility.Hidden;
+            ClientPanel.Visibility = Visibility.Hidden;
             //Discount system
             DiscountGrid.ItemsSource = BD.DiscountShow().DefaultView;
             DiscountGrid.AutoGenerateColumns = true;
@@ -265,16 +468,69 @@ namespace WpfApp1
         private void ClientsButton_Click(object sender, RoutedEventArgs e)
         {
             InfoTab.Visibility = Visibility.Hidden;
+            SchedulePanel.Visibility = Visibility.Hidden;
+            ClientPanel.Visibility = Visibility.Visible;
+
+            ClientsGrid.ItemsSource = BD.ClientsShow().DefaultView;
+            ClientsGrid.AutoGenerateColumns = true;
+            ClientsGrid.CanUserAddRows = false;
+
         }
-        //MENU->RENT
-        private void RentButton_Click(object sender, RoutedEventArgs e)
+        private void CreateClientButton_Click(object sender, RoutedEventArgs e)
         {
-            InfoTab.Visibility = Visibility.Hidden;
+            BD.ClientCreate(NameCl.Text, NumberCl.Text, DateCl.Text, CardCl.Text);
+            ClientsGrid.ItemsSource = BD.ClientsShow().DefaultView;
+            NameCl.Text = "Имя";
+            NumberCl.Text = "Номер телефона";
+            DateCl.Text = "Дата рождения";
+            CardCl.Text = "ИД Карты";
         }
         //MENU->SCHEDULE
         private void ScheduleButton_Click(object sender, RoutedEventArgs e)
         {
             InfoTab.Visibility = Visibility.Hidden;
+            ClientPanel.Visibility = Visibility.Hidden;
+            SchedulePanel.Visibility = Visibility.Visible;
+            EquipmentList.ItemsSource = BD.EquipmentShowSchedule().DefaultView;
+            EquipmentGrid.AutoGenerateColumns = true;
+            EquipmentGrid.CanUserAddRows = false;
+
+            ScheduleGid.ItemsSource = BD.ScheduleShow().DefaultView;
+            ScheduleGid.AutoGenerateColumns = true;
+            ScheduleGid.CanUserAddRows = false;
+
+            ScheduleGidCompleted.ItemsSource = BD.ScheduleShowCompleted().DefaultView;
+            ScheduleGidCompleted.AutoGenerateColumns = true;
+            ScheduleGidCompleted.CanUserAddRows = false;
+        }
+        private void MakeCompletedButton_Click(object sender, RoutedEventArgs e)
+        {
+            BD.ScheduleUpdate(SessionID.Text);
+            SessionID.Text = "ID";
+            ScheduleGid.ItemsSource = BD.ScheduleShow().DefaultView;
+            ScheduleGidCompleted.ItemsSource = BD.ScheduleShowCompleted().DefaultView;
+
+        }
+        private void CreateSessionButton_Click(object sender, RoutedEventArgs e)
+        {
+            var NewClient = (CheckNewClient.IsChecked == true? true: false);
+            BD.ScheduleCreate(SessionDate.Text, 
+                SessionHour.Text,
+                SessionDuration.Text,
+                SessionName.Text,
+                SessionPhone.Text,
+                NewClient,
+                SessionCard.Text,
+                SessionEquipmentID.Text);
+
+            SessionDate.Text = "ДД.ММ.ГГГГ";
+            SessionHour.Text = "ЧЧ";
+            SessionDuration.Text = "Пролоджительность";
+            SessionName.Text = "Имя";
+            SessionPhone.Text = "Телефон";
+            CheckNewClient.IsChecked = false;
+            SessionCard.Text = "ID Карты";
+            SessionEquipmentID.Text = "ID";
         }
     }
 }
