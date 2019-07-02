@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Npgsql;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -26,8 +27,13 @@ namespace WpfApp1
 
         public static void CreateConnection()
         {
-            connection = new SQLiteConnection("Data Source=bdkursach.db");
-            connection.Open();
+            string conn_param = "Server=localhost;Port=5432;User Id=username;Password=password;Database=postgres;";  
+            //string sql = "текст запроса к базе данных";
+            NpgsqlConnection conn = new NpgsqlConnection(conn_param);
+            //NpgsqlCommand comm = new NpgsqlCommand(sql, conn);
+            conn.Open(); //Открываем соединение.
+            //result = comm.ExecuteScalar().ToString(); //Выполняем нашу команду.
+            conn.Close(); //Закрываем соединение.
         }
 
         //АВТОРИЗАЦИЯ
@@ -383,154 +389,159 @@ namespace WpfApp1
         {
             BD.CreateConnection();
             InitializeComponent();
-            AutorizationPanel.Visibility = Visibility.Visible;
-            MenuPanel.Visibility = Visibility.Hidden;
-            InfoTab.Visibility = Visibility.Hidden;
-            SchedulePanel.Visibility = Visibility.Hidden;
-            ClientPanel.Visibility = Visibility.Hidden;
-        }
-        //AUTORIZATION
-        private void AcceptButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (BD.Login(LoginBox.Text, PasswordBox.Text))
-            {
-                AutorizationPanel.Visibility = Visibility.Hidden;
-                MenuPanel.Visibility = Visibility.Visible;
-            }
-        }
-        //MENU->INFO
-        private void InfoButton_Click(object sender, RoutedEventArgs e)
-        {
-            InfoTab.Visibility = Visibility.Visible;
-            SchedulePanel.Visibility = Visibility.Hidden;
-            ClientPanel.Visibility = Visibility.Hidden;
-            //Discount system
-            DiscountGrid.ItemsSource = BD.DiscountShow().DefaultView;
-            DiscountGrid.AutoGenerateColumns = true;
-            DiscountGrid.CanUserAddRows = false;
-            //Time mode
-            TimeModeGrid.ItemsSource = BD.TimeModeShow().DefaultView;
-            TimeModeGrid.AutoGenerateColumns = true;
-            TimeModeGrid.CanUserAddRows = false;
-            //Equipment
-            EquipmentGrid.ItemsSource = BD.EquipmentShow().DefaultView;
-            EquipmentGrid.AutoGenerateColumns = true;
-            EquipmentGrid.CanUserAddRows = false;
-        }
-        //DISCOUNT SYSTEM
-        private void AddDiscountButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                BD.DiscountAdd(int.Parse(DiscountSizeBox.Text), int.Parse(DiscountSummBox.Text));
-                DiscountGrid.ItemsSource = BD.DiscountShow().DefaultView;
-                DiscountSizeBox.Text = "Размер скидки";
-                DiscountSummBox.Text = "Сумма";
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
+            //AutorizationPanel.Visibility = Visibility.Visible;
+            //MenuPanel.Visibility = Visibility.Hidden;
+            //InfoTab.Visibility = Visibility.Hidden;
+            //SchedulePanel.Visibility = Visibility.Hidden;
+            //ClientPanel.Visibility = Visibility.Hidden;
         }
 
-        private void DeleteDiscountButton_Click(object sender, RoutedEventArgs e)
+        private void ListViewItem_Selected(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                BD.DiscountDelete(int.Parse(DiscountIDBox.Text));
-                DiscountGrid.ItemsSource = BD.DiscountShow().DefaultView;
-                DiscountIDBox.Text = "ID";
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-        }
-
-        private void AddDayButton_Click(object sender, RoutedEventArgs e)
-        {
-            int mode = 1;
-            if (LongMode2.IsChecked == true) mode = 2;
-            if (ShortMode3.IsChecked == true) mode = 3;
-            try
-            {
-                BD.TimeModeAdd(DateTimeMode.Text, mode);
-                DiscountGrid.ItemsSource = BD.TimeModeShow().DefaultView;
-                DateTimeMode.Text = "ДД.ММ.ГГГГ";
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-        }
-        
-        //MENU->CLIENTS
-        private void ClientsButton_Click(object sender, RoutedEventArgs e)
-        {
-            InfoTab.Visibility = Visibility.Hidden;
-            SchedulePanel.Visibility = Visibility.Hidden;
-            ClientPanel.Visibility = Visibility.Visible;
-
-            ClientsGrid.ItemsSource = BD.ClientsShow().DefaultView;
-            ClientsGrid.AutoGenerateColumns = true;
-            ClientsGrid.CanUserAddRows = false;
 
         }
-        private void CreateClientButton_Click(object sender, RoutedEventArgs e)
-        {
-            BD.ClientCreate(NameCl.Text, NumberCl.Text, DateCl.Text, CardCl.Text);
-            ClientsGrid.ItemsSource = BD.ClientsShow().DefaultView;
-            NameCl.Text = "Имя";
-            NumberCl.Text = "Номер телефона";
-            DateCl.Text = "Дата рождения";
-            CardCl.Text = "ИД Карты";
-        }
-        //MENU->SCHEDULE
-        private void ScheduleButton_Click(object sender, RoutedEventArgs e)
-        {
-            InfoTab.Visibility = Visibility.Hidden;
-            ClientPanel.Visibility = Visibility.Hidden;
-            SchedulePanel.Visibility = Visibility.Visible;
-            EquipmentList.ItemsSource = BD.EquipmentShowSchedule().DefaultView;
-            EquipmentGrid.AutoGenerateColumns = true;
-            EquipmentGrid.CanUserAddRows = false;
+        ////AUTORIZATION
+        //private void AcceptButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    //if (BD.Login(LoginBox.Text, PasswordBox.Text))
+        //    //{
+        //        AutorizationPanel.Visibility = Visibility.Hidden;
+        //        MenuPanel.Visibility = Visibility.Visible;
+        //    //}
+        //}
+        ////MENU->INFO
+        //private void InfoButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    InfoTab.Visibility = Visibility.Visible;
+        //    SchedulePanel.Visibility = Visibility.Hidden;
+        //    ClientPanel.Visibility = Visibility.Hidden;
+        //    //Discount system
+        //    DiscountGrid.ItemsSource = BD.DiscountShow().DefaultView;
+        //    DiscountGrid.AutoGenerateColumns = true;
+        //    DiscountGrid.CanUserAddRows = false;
+        //    //Time mode
+        //    TimeModeGrid.ItemsSource = BD.TimeModeShow().DefaultView;
+        //    TimeModeGrid.AutoGenerateColumns = true;
+        //    TimeModeGrid.CanUserAddRows = false;
+        //    //Equipment
+        //    EquipmentGrid.ItemsSource = BD.EquipmentShow().DefaultView;
+        //    EquipmentGrid.AutoGenerateColumns = true;
+        //    EquipmentGrid.CanUserAddRows = false;
+        //}
+        ////DISCOUNT SYSTEM
+        //private void AddDiscountButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    try
+        //    {
+        //        BD.DiscountAdd(int.Parse(DiscountSizeBox.Text), int.Parse(DiscountSummBox.Text));
+        //        DiscountGrid.ItemsSource = BD.DiscountShow().DefaultView;
+        //        DiscountSizeBox.Text = "Размер скидки";
+        //        DiscountSummBox.Text = "Сумма";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex);
+        //    }
+        //}
 
-            ScheduleGid.ItemsSource = BD.ScheduleShow().DefaultView;
-            ScheduleGid.AutoGenerateColumns = true;
-            ScheduleGid.CanUserAddRows = false;
+        //private void DeleteDiscountButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    try
+        //    {
+        //        BD.DiscountDelete(int.Parse(DiscountIDBox.Text));
+        //        DiscountGrid.ItemsSource = BD.DiscountShow().DefaultView;
+        //        DiscountIDBox.Text = "ID";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex);
+        //    }
+        //}
 
-            ScheduleGidCompleted.ItemsSource = BD.ScheduleShowCompleted().DefaultView;
-            ScheduleGidCompleted.AutoGenerateColumns = true;
-            ScheduleGidCompleted.CanUserAddRows = false;
-        }
-        private void MakeCompletedButton_Click(object sender, RoutedEventArgs e)
-        {
-            BD.ScheduleUpdate(SessionID.Text);
-            SessionID.Text = "ID";
-            ScheduleGid.ItemsSource = BD.ScheduleShow().DefaultView;
-            ScheduleGidCompleted.ItemsSource = BD.ScheduleShowCompleted().DefaultView;
+        //private void AddDayButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    int mode = 1;
+        //    if (LongMode2.IsChecked == true) mode = 2;
+        //    if (ShortMode3.IsChecked == true) mode = 3;
+        //    try
+        //    {
+        //        BD.TimeModeAdd(DateTimeMode.Text, mode);
+        //        DiscountGrid.ItemsSource = BD.TimeModeShow().DefaultView;
+        //        DateTimeMode.Text = "ДД.ММ.ГГГГ";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex);
+        //    }
+        //}
 
-        }
-        private void CreateSessionButton_Click(object sender, RoutedEventArgs e)
-        {
-            var NewClient = (CheckNewClient.IsChecked == true? true: false);
-            BD.ScheduleCreate(SessionDate.Text, 
-                SessionHour.Text,
-                SessionDuration.Text,
-                SessionName.Text,
-                SessionPhone.Text,
-                NewClient,
-                SessionCard.Text,
-                SessionEquipmentID.Text);
+        ////MENU->CLIENTS
+        //private void ClientsButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    InfoTab.Visibility = Visibility.Hidden;
+        //    SchedulePanel.Visibility = Visibility.Hidden;
+        //    ClientPanel.Visibility = Visibility.Visible;
 
-            SessionDate.Text = "ДД.ММ.ГГГГ";
-            SessionHour.Text = "ЧЧ";
-            SessionDuration.Text = "Пролоджительность";
-            SessionName.Text = "Имя";
-            SessionPhone.Text = "Телефон";
-            CheckNewClient.IsChecked = false;
-            SessionCard.Text = "ID Карты";
-            SessionEquipmentID.Text = "ID";
-        }
+        //    ClientsGrid.ItemsSource = BD.ClientsShow().DefaultView;
+        //    ClientsGrid.AutoGenerateColumns = true;
+        //    ClientsGrid.CanUserAddRows = false;
+
+        //}
+        //private void CreateClientButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    BD.ClientCreate(NameCl.Text, NumberCl.Text, DateCl.Text, CardCl.Text);
+        //    ClientsGrid.ItemsSource = BD.ClientsShow().DefaultView;
+        //    NameCl.Text = "Имя";
+        //    NumberCl.Text = "Номер телефона";
+        //    DateCl.Text = "Дата рождения";
+        //    CardCl.Text = "ИД Карты";
+        //}
+        ////MENU->SCHEDULE
+        //private void ScheduleButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    InfoTab.Visibility = Visibility.Hidden;
+        //    ClientPanel.Visibility = Visibility.Hidden;
+        //    SchedulePanel.Visibility = Visibility.Visible;
+        //    EquipmentList.ItemsSource = BD.EquipmentShowSchedule().DefaultView;
+        //    EquipmentGrid.AutoGenerateColumns = true;
+        //    EquipmentGrid.CanUserAddRows = false;
+
+        //    ScheduleGid.ItemsSource = BD.ScheduleShow().DefaultView;
+        //    ScheduleGid.AutoGenerateColumns = true;
+        //    ScheduleGid.CanUserAddRows = false;
+
+        //    ScheduleGidCompleted.ItemsSource = BD.ScheduleShowCompleted().DefaultView;
+        //    ScheduleGidCompleted.AutoGenerateColumns = true;
+        //    ScheduleGidCompleted.CanUserAddRows = false;
+        //}
+        //private void MakeCompletedButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    BD.ScheduleUpdate(SessionID.Text);
+        //    SessionID.Text = "ID";
+        //    ScheduleGid.ItemsSource = BD.ScheduleShow().DefaultView;
+        //    ScheduleGidCompleted.ItemsSource = BD.ScheduleShowCompleted().DefaultView;
+
+        //}
+        //private void CreateSessionButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var NewClient = (CheckNewClient.IsChecked == true? true: false);
+        //    BD.ScheduleCreate(SessionDate.Text, 
+        //        SessionHour.Text,
+        //        SessionDuration.Text,
+        //        SessionName.Text,
+        //        SessionPhone.Text,
+        //        NewClient,
+        //        SessionCard.Text,
+        //        SessionEquipmentID.Text);
+
+        //    SessionDate.Text = "ДД.ММ.ГГГГ";
+        //    SessionHour.Text = "ЧЧ";
+        //    SessionDuration.Text = "Пролоджительность";
+        //    SessionName.Text = "Имя";
+        //    SessionPhone.Text = "Телефон";
+        //    CheckNewClient.IsChecked = false;
+        //    SessionCard.Text = "ID Карты";
+        //    SessionEquipmentID.Text = "ID";
+        //}
     }
 }
