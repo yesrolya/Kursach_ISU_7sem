@@ -15,20 +15,24 @@ using System.Windows.Shapes;
 namespace WpfApp1.View
 {
     /// <summary>
-    /// Логика взаимодействия для ClientWindow.xaml
+    /// Логика взаимодействия для MembershipWindow.xaml
     /// </summary>
-    public partial class ClientWindow : Window
+    public partial class MembershipWindow : Window
     {
-        public ClientWindow()
+        Membership m = null;
+
+        public MembershipWindow(Membership membership)
         {
             InitializeComponent();
+            this.m = membership;
+            IdText.Text = m.Id;
+            PriceText.Text = m.Price;
+            DurationText.Text = m.Duration;
         }
-        
+
         private void ButtonAccept_Click(object sender, RoutedEventArgs e)
         {
-            //создание нового клиента
-            var client = new Client(NameBox.Text, DayBox.Text, MonthBox.Text, YearBox.Text, PhoneBox.Text);
-            Postgre.ExecuteNonQuery(client.ToQueryAdd());
+            Postgre.ExecuteNonQuery(m.ToQueryActivate());
             MainWindow.UpdateTable();
             this.Close();
         }

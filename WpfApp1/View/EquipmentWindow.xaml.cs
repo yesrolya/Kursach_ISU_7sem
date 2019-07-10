@@ -15,21 +15,23 @@ using System.Windows.Shapes;
 namespace WpfApp1.View
 {
     /// <summary>
-    /// Логика взаимодействия для ClientWindow.xaml
+    /// Логика взаимодействия для EquipmentWindow.xaml
     /// </summary>
-    public partial class ClientWindow : Window
+    public partial class EquipmentWindow : Window
     {
-        public ClientWindow()
+        public EquipmentWindow()
         {
             InitializeComponent();
         }
-        
+
+        public EquipmentWindow(Equipment equipment)
+        {
+            InitializeComponent();
+        }
+
         private void ButtonAccept_Click(object sender, RoutedEventArgs e)
         {
-            //создание нового клиента
-            var client = new Client(NameBox.Text, DayBox.Text, MonthBox.Text, YearBox.Text, PhoneBox.Text);
-            Postgre.ExecuteNonQuery(client.ToQueryAdd());
-            MainWindow.UpdateTable();
+            //
             this.Close();
         }
 

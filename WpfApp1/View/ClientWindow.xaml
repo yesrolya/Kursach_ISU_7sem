@@ -5,29 +5,38 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1.View"
         mc:Ignorable="d"
-        Title="Client" Width="400" Height="500" 
-		Foreground="Black"
+        Title="Client" 
+		Width="400" Height="430" 
+		Foreground="#FF555555"
 		Background="LightGray"
 		FontFamily="Roboto"
 		FontSize="14"
 		xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-		WindowStartupLocation="CenterScreen">
+		WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <Grid>
 		<StackPanel Margin="20">
-			<TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="30" Foreground="Black" Margin="15 20">
+			<TextBlock HorizontalAlignment="Left" FontSize="24" Foreground="Black" Margin="15 10">
 				Регистрация клиента
 			</TextBlock>
-			<Border Background="White" Margin="10 10" CornerRadius="5">
-
+			<Border Background="White" Margin="10 10" CornerRadius="5" BorderThickness="3,0,0,0">
 				<StackPanel Margin="20">
-					<TextBox Margin="10 20" Style="{StaticResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="Имя"/>
-					<TextBox Margin="10 20" Style="{StaticResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="Дата рождения"/>
-					<TextBox Margin="10 20" Style="{StaticResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="Номер телефона"/>
+					<TextBlock Text="Имя клиента" Margin="10 0"/>
+					<TextBox Name="NameBox" Margin="10 0 10 20"/>
+					<TextBlock Text="Дата рождения" Margin="10 0"/>
+					<StackPanel Margin="10 0" Orientation="Horizontal">
+						<TextBox Name="DayBox" MaxLength="2" Style="{StaticResource MaterialDesignTextBox}" Width="30" Height="38" materialDesign:HintAssist.Hint="ДД"/>
+						<TextBlock Text="/" FontSize="22" VerticalAlignment="Bottom" Foreground="LightGray"/>
+						<TextBox Name="MonthBox"  MaxLength="2" Style="{StaticResource MaterialDesignTextBox}" Width="30" materialDesign:HintAssist.Hint="ММ"/>
+						<TextBlock Text="/" FontSize="22" VerticalAlignment="Bottom" Foreground="LightGray" />
+						<TextBox Name="YearBox" MaxLength="4" Style="{StaticResource MaterialDesignTextBox}" Width="50" materialDesign:HintAssist.Hint="ГГГГ"/>
+					</StackPanel>
+					<TextBlock Text="Номер телефона" Margin="10 20 10 10"/>
+					<TextBox Name="PhoneBox" Margin="10 0" MaxLength="12" Style="{StaticResource MaterialDesignTextBox}" materialDesign:HintAssist.Hint="+7  000-000-00-00"/>
 					<Separator Height="20" Background="Transparent"/>
 					<StackPanel  HorizontalAlignment="Center" Orientation="Horizontal">
-						<Button Width="130">CANCEL</Button>
+						<Button Width="130" Click="ButtonCancel_Click">Отмена</Button>
 						<Separator Width="20" Background="Transparent"/>
-						<Button Width="130">APPLY</Button>
+						<Button Width="130" Click="ButtonAccept_Click">Принять</Button>
 					</StackPanel>
 				</StackPanel>
 			</Border>

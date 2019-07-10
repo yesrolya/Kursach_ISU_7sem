@@ -17,11 +17,11 @@ namespace WpfApp1.View
             string login = LoginBox.Text;
             string password = PasswordBox.Password;
 
-            if (Postrgre.AutorizeUser(login, password)) {
+            if (Postgre.AutorizeUser(login, password)) {
                 MainWindow mw = new MainWindow();
                 mw.Show();
                 this.Close();
-            } 
+            }
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
